@@ -2,11 +2,16 @@ package com.example.kotlinpet_manager_sebas.view
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import com.example.kotlinpet_manager_sebas.viewmodel.PacienteViewModel
 
@@ -20,92 +25,97 @@ fun PantallaRegistroView(
     var especie by remember { mutableStateOf("") }
     var edad by remember { mutableStateOf("") }
     var esUrgencia by remember { mutableStateOf("") }
-    var contacto by remember { mutableStateOf("") }
+    var contactoEmergencia by remember { mutableStateOf("") }
     var resultado by remember { mutableStateOf("") }
 
+    // El contenedor Column es un requisito directo para el formulario[cite: 6]
     Column(
         modifier = modifier
             .fillMaxSize()
             .padding(16.dp)
-            .verticalScroll(rememberScrollState()), // para pantallas pequeñas
+            .verticalScroll(rememberScrollState()),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        InterfazTextoInput(
+        InterfazTextoInputView(
             value = id,
             onValueChange = { id = it },
+            label = "ID del peludito",
             modifier = Modifier.fillMaxWidth(),
-            label = "Ingrese el id del peludito"
+            icono = Icons.Default.Numbers
         )
-        Spacer(modifier = Modifier.height(16.dp))
+        Spacer(modifier = Modifier.height(12.dp))
 
-        InterfazTextoInput(
+        // Campos requeridos por la rúbrica: Nombre, Especie/Raza, Edad y Contacto de emergencia[cite: 6]
+        InterfazTextoInputView(
             value = nombre,
             onValueChange = { nombre = it },
+            label = "Nombre",
             modifier = Modifier.fillMaxWidth(),
-            label = "Ingrese nombre del peludito"
+            icono = Icons.Default.Face
         )
-        Spacer(modifier = Modifier.height(16.dp))
+        Spacer(modifier = Modifier.height(12.dp))
 
-        InterfazTextoInput(
+        InterfazTextoInputView(
             value = especie,
             onValueChange = { especie = it },
+            label = "Especie/Raza",
             modifier = Modifier.fillMaxWidth(),
-            label = "Ingrese la especie del peludito"
+            icono = Icons.Default.Info
         )
-        Spacer(modifier = Modifier.height(16.dp))
+        Spacer(modifier = Modifier.height(12.dp))
 
-        InterfazTextoInput(
+        InterfazTextoInputView(
             value = edad,
             onValueChange = { edad = it },
+            label = "Edad (Años)",
             modifier = Modifier.fillMaxWidth(),
-            label = "Ingrese la edad del peludito"
+            icono = Icons.Default.DateRange,
+            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
         )
-        Spacer(modifier = Modifier.height(16.dp))
+        Spacer(modifier = Modifier.height(12.dp))
 
-        InterfazTextoInput(
+        InterfazTextoInputView(
             value = esUrgencia,
             onValueChange = { esUrgencia = it },
+            label = "¿Es urgencia? (Si/No)",
             modifier = Modifier.fillMaxWidth(),
-            label = "¿El paciente tiene una urgencia?"
+            icono = Icons.Default.Warning
         )
-        Spacer(modifier = Modifier.height(16.dp))
+        Spacer(modifier = Modifier.height(12.dp))
 
-        InterfazTextoInput(
-            value = contacto,
-            onValueChange = { contacto = it },
+        InterfazTextoInputView(
+            value = contactoEmergencia,
+            onValueChange = { contactoEmergencia = it },
+            label = "Contacto de emergencia",
             modifier = Modifier.fillMaxWidth(),
-            label = "Contacto de emergencia del peludito"
+            icono = Icons.Default.Phone,
+            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Phone)
         )
-        Spacer(modifier = Modifier.height(16.dp))
+        Spacer(modifier = Modifier.height(24.dp))
 
         InterfazFilaView(
-            limpiarUsuarios = {
-                id = ""
-                nombre = ""
-                especie = ""
-                edad = ""
-                esUrgencia = ""
-                contacto = ""
+            limpiarFormulario = {
+                id = ""; nombre = ""; especie = ""; edad = ""; esUrgencia = ""; contactoEmergencia = ""; resultado = ""
             },
             botonAgregarPaciente = {
-                resultado = "Paciente guardado exitosamente:\nId: $id \nNombre: $nombre \nEspecie: $especie \nEdad: $edad \n¿Es una Urgencia?: $esUrgencia \nNumero de Contacto: $contacto"
-
-                viewModel.agregarPaciente(
-                    id = id,
-                    nombre = nombre,
-                    especie = especie,
-                    edad = edad,
-                    esUrgencia = esUrgencia,
-                    contacto = contacto
-                )
-
-                id = ""; nombre = ""; especie = ""; edad = ""; esUrgencia = ""; contacto = ""
+                val guardadoExitoso = viewModel.agregarPaciente(id, nombre, especie, edad, esUrgencia, contactoEmergencia)
+                if (guardadoExitoso) {
+                    resultado = "Paciente guardado exitosamente:\nId: $id \nNombre: $nombre \nEspecie: $especie \nEdad: $edad \nUrgencia: $esUrgencia \nContacto: $contactoEmergencia"
+                    id = ""; nombre = ""; especie = ""; edad = ""; esUrgencia = ""; contactoEmergencia = ""
+                } else {
+                    resultado = "Error: Verifica que no haya campos vacíos y que los datos sean válidos."
+                }
             }
         )
+
         Spacer(modifier = Modifier.height(16.dp))
 
         if (resultado.isNotEmpty()) {
-            InterfazTextoView(texto = resultado, estilo = MaterialTheme.typography.bodyLarge)
+            Text(
+                text = resultado,
+                style = MaterialTheme.typography.bodyLarge,
+                color = if (resultado.startsWith("Error")) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.primary
+            )
         }
     }
 }
