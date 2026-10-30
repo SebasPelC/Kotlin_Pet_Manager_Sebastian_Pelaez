@@ -5,5 +5,6 @@ data class Paciente(
     val nombre: String = "",
     val especie: String = "",
     val edad: Int = 0 ,
-    val esUrgencia: Boolean = false
+    val esUrgencia: Boolean = false,
+    val contacto: String = ""
 )

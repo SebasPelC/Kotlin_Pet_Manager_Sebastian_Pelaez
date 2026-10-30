@@ -20,20 +20,22 @@ class PacienteViewModel: ViewModel() {
         nombre: String,
         especie: String,
         edad: String,
-        esUrgencia: String
+        esUrgencia: String,
+        contacto: String
     ){
         // Validaciones básicas o conversiones seguras de tipos
         val edad = edad.toIntOrNull() ?: 0
         // evaluar si el texto dice "sí", "true", etc., o pasarlo a Boolean
         val esUrgencia = esUrgencia.equals("si", ignoreCase = true) || esUrgencia.equals("true", ignoreCase = true)
 
-        //  nuevo objeto Paciente
+
         val nuevoPaciente = Paciente(
             id = id,
             nombre = nombre,
             especie = especie,
             edad = edad,
-            esUrgencia = esUrgencia
+            esUrgencia = esUrgencia,
+            contacto = contacto
         )
 
         // Actualizamos la lista agregando el nuevo paciente al final (o al inicio)
